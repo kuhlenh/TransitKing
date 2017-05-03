@@ -143,8 +143,8 @@ namespace BusInfo
 
         public MyStopInfo(IBusLocator busLocator, ITimeZoneConverter timezoneConverter)
         {
-            this._busLocator = busLocator;
-            this._timezoneConverter = timezoneConverter;
+            _busLocator = busLocator;
+            _timezoneConverter = timezoneConverter;
         }
 
         // Finds the closest stop for the given route name and gets arrival data for that stop
