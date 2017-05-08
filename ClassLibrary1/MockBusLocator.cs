@@ -12,13 +12,13 @@ namespace BusInfo
 
         public Task<string> GetJsonForArrivals(string stopId)
         {
-            var json = LoadJson(@"c:\users\kaseyu\documents\visual studio 2017\Projects\ClassLibrary1\UnitTestProject1\Arrivals.json");
+            var json = LoadJson(@"C:\Users\kaseyu\Source\Repos\TransitKing\UnitTestProject1\Arrivals.json");
             return Task.FromResult(json);
         }
 
         public Task<string> GetJsonForStopsFromLatLongAsync(string lat, string lon)
         {
-            var json = LoadJson(@"c:\users\kaseyu\documents\visual studio 2017\Projects\ClassLibrary1\UnitTestProject1\StopsForLoc.json");
+            var json = LoadJson(@"C:\Users\kaseyu\Source\Repos\TransitKing\UnitTestProject1\StopsForLoc.json");
             return Task.FromResult(json);
         }
     }
