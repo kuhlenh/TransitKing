@@ -224,7 +224,7 @@ namespace BusInfo
         // Finds the bus route that matches the route short name and finds the closest
         // bus stop that contains the route.
         // Returns a tuple of the user's Route and the nearest Stop in a 1800-meter radius
-        public async Task<(Route, Stop)> GetRouteAndStopForLocation(string routeShortName, string lat, string lon)
+        public async Task<(Route route, Stop stop)> GetRouteAndStopForLocation(string routeShortName, string lat, string lon)
         {
             var routeAndStops = await GetStopsForRoute(routeShortName, lat, lon);
             if (routeAndStops.Item1 == null || routeAndStops.Item2 == null)
