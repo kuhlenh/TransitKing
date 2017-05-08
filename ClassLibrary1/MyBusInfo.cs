@@ -160,19 +160,18 @@ namespace BusInfo
             var UserTimeData = UtcData.Select(d => TimeZoneInfo.ConvertTimeFromUtc(d, timeZoneInfo));
             return UserTimeData.ToList();
         }
+        
+        public async Task<TimeZoneInfo> GetTimeZoneInfoAsync(string lat, string lon)
+        {
+            string json = await _timezoneConverter.GetTimeZoneJsonFromLatLonAsync(lat, lon);
+            string timeZoneId = JObject.Parse(json)["timeZoneId"].ToString();
+            var olsonTimeZone = olsonWindowsTimes[timeZoneId];
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZone);
+            return timeZoneInfo;
+        }
 
         private void ValidateLatLon(string lat, string lon)
         {
-            if (lat == null)
-            {
-                throw new ArgumentNullException(nameof(lat));
-            }
-
-            if (lon == null)
-            {
-                throw new ArgumentNullException(nameof(lon));
-            }
-
             if (lat.Length > 0 && lon.Length > 0)
             {
                 var latDouble = double.Parse(lat);
@@ -185,23 +184,14 @@ namespace BusInfo
             throw new ArgumentException("Not a valid latitude or longitude.");
         }
 
-        public async Task<TimeZoneInfo> GetTimeZoneInfoAsync(string lat, string lon)
-        {
-            string json = await _timezoneConverter.GetTimeZoneJsonFromLatLonAsync(lat, lon);
-            string timeZoneId = JObject.Parse(json)["timeZoneId"].ToString();
-            var olsonTimeZone = olsonWindowsTimes[timeZoneId];
-            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZone);
-            return timeZoneInfo;
-        }
-
         public async Task<List<ArrivalsAndDeparture>> GetArrivalsAndDepartures(string stopId, string routeShortName)
         {
             var json = await _busLocator.GetJsonForArrivals(stopId);
-            return FindArrivalsForRoute(routeShortName, json);
+            return FindArrivalsForRoute(routeShortName, stopId, json);
         }
 
         // Returns the arrivals and departure data if it contains the route name 
-        public List<ArrivalsAndDeparture> FindArrivalsForRoute(string routeShortName, string json)
+        public List<ArrivalsAndDeparture> FindArrivalsForRoute(string routeShortName, string stopId, string json)
         {
             var arrivalsAndDeparture = new List<ArrivalsAndDeparture>();
             var jobject = JObject.Parse(json);
@@ -230,7 +220,7 @@ namespace BusInfo
         // Finds the bus route that matches the route short name and finds the closest
         // bus stop that contains the route.
         // Returns a tuple of the user's Route and the nearest Stop in a 1800-meter radius
-        public async Task<(Route, Stop)> GetRouteAndStopForLocation(string routeShortName, string lat, string lon, Direction direction = null)
+        public async Task<(Route, Stop)> GetRouteAndStopForLocation(string routeShortName, string lat, string lon)
         {
             var routeAndStops = await GetStopsForRoute(routeShortName, lat, lon);
             if (routeAndStops.Item1 == null || routeAndStops.Item2 == null)
@@ -239,10 +229,10 @@ namespace BusInfo
             }
 
             Stop minDistStop;
-            if (direction != null)
-                minDistStop = FindClosestStopInDirection(direction, lat, lon, routeAndStops.Item2);
-            else
-                minDistStop = routeAndStops.Item2.First();
+            //if (direction != null)
+            //    minDistStop = FindClosestStopInDirection(direction, lat, lon, routeAndStops.Item2);
+            //else
+            minDistStop = routeAndStops.Item2.First();
 
             return (routeAndStops.Item1, minDistStop);
         }
@@ -285,14 +275,14 @@ namespace BusInfo
         }
 
         // Determines the closest stop to the given latitude and longitude
-        private Stop FindClosestStopInDirection(Direction direction, string lat, string lon, List<Stop> stopsForRoute)
-        {
-            var stopWithMinDist = stopsForRoute?.Where(s => s.Direction.Equals(direction))
-                                      ?.Select(d => (stop: d, distance: CalculateDistance(lat, lon, d.Lat, d.Lon)))
-                                      ?.OrderBy(t => t.distance).First();
+        //private Stop FindClosestStopInDirection(Direction direction, string lat, string lon, List<Stop> stopsForRoute)
+        //{
+        //    var stopWithMinDist = stopsForRoute?.Where(s => s.Direction.Equals(direction))
+        //                              ?.Select(d => (stop: d, distance: CalculateDistance(lat, lon, d.Lat, d.Lon)))
+        //                              ?.OrderBy(t => t.distance).First();
 
-            return stopWithMinDist?.stop;
-        }
+        //    return stopWithMinDist?.stop;
+        //}
 
         // Uses distance formula to find distance between two points
         private double CalculateDistance(string lat1, string lon1, double lat2, double lon2)

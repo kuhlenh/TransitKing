@@ -17,7 +17,7 @@ namespace TransitKingSkill.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> SampleSession()
         {
-            var speechlet = new SampleSessionSpeechlet();
+            var speechlet = new BusSpeechlet();
             return await speechlet.GetResponseAsync(Request);
         }
     }

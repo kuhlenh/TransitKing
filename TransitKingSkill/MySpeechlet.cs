@@ -16,7 +16,7 @@ using BusInfo;
 
 namespace TransitKingSkill
 {
-    public class SampleSessionSpeechlet : MySpeechletAsync
+    public class BusSpeechlet : MySpeechletAsync
     {
         private const string BusKey = "Bus";
         private const string BusForIntent = "BusForIntent";
