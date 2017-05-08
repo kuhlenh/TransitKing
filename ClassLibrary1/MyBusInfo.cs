@@ -148,44 +148,26 @@ namespace BusInfo
         // Returns a list of DateTimes for the timezone of the given lat/lon
         public async Task<List<DateTime>> GetArrivalTimesForRouteName(string routeShortName, string lat, string lon)
         {
-            ValidateLatLon(lat, lon);
+            BusHelpers.ValidateLatLon(lat, lon);
             
             // find the route object for the given name and the closest stop for that route
             var (route, stop) = await GetRouteAndStopForLocation(routeShortName, lat, lon);
-            var arrivalData = await GetArrivalsAndDepartures(stop.Id, route.ShortName);
-            var UtcData = arrivalData.Select(a => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+            List<ArrivalsAndDeparture> arrivalData = await GetArrivalsAndDepartures(stop.Id, route.ShortName);
+            IEnumerable<DateTime> UtcData = arrivalData.Select(a => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                                                .AddMilliseconds(Convert.ToDouble(a.PredictedArrivalTime))).Take(3);
-            // DEMO : change from Utc to user's timezone
+            // Convert from UTC to user's timezone
             TimeZoneInfo timeZoneInfo = await GetTimeZoneInfoAsync(lat, lon);
-            var UserTimeData = UtcData.Select(d => TimeZoneInfo.ConvertTimeFromUtc(d, timeZoneInfo));
+            IEnumerable<DateTime> UserTimeData = UtcData.Select(d => TimeZoneInfo.ConvertTimeFromUtc(d, timeZoneInfo));
             return UserTimeData.ToList();
         }
 
         public async Task<TimeZoneInfo> GetTimeZoneInfoAsync(string lat, string lon)
         {
-            string json = await _timezoneConverter.GetTimeZoneJsonFromLatLonAsync(lat, lon);
-            string timeZoneId = JObject.Parse(json)["timeZoneId"].ToString();
+            var json = await _timezoneConverter.GetTimeZoneJsonFromLatLonAsync(lat, lon);
+            var timeZoneId = JObject.Parse(json)["timeZoneId"].ToString();
             var olsonTimeZone = olsonWindowsTimes[timeZoneId];
-            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZone);
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZone);
             return timeZoneInfo;
-        }
-
-        private void ValidateLatLon(string lat, string lon)
-        {
-            if (lat.Length > 0 && lon.Length > 0)
-            {
-                var latDouble = double.Parse(lat);
-                var lonDouble = double.Parse(lon);
-                if (latDouble >=-90 && latDouble <=90 && lonDouble >=-180 && lonDouble <=180)
-                {
-                    return;
-                }
-                else
-                {
-                    throw new ArgumentException("Not a valid latitude or longitude.");
-                }
-            }
-            throw new ArgumentException("Not a valid latitude or longitude.");
         }
 
         public async Task<List<ArrivalsAndDeparture>> GetArrivalsAndDepartures(string stopId, string routeShortName)
@@ -202,54 +184,33 @@ namespace BusInfo
             if (jobject["code"].ToString() == "200")
             {
                 var results = jobject["data"]["entry"]["arrivalsAndDepartures"].Children().ToList();
-                var searchResult = results.Where(x => CleanRouteName(x["routeShortName"].ToString()) == routeShortName);
+                var searchResult = results.Where(x => BusHelpers.CleanRouteName(x["routeShortName"].ToString()) == routeShortName);
                 if (searchResult.Count() > 0)
                 {
-                    foreach (var s in searchResult)
+                    foreach (JToken s in searchResult)
                     {
-                        var x = s.ToObject<ArrivalsAndDeparture>();
+                        ArrivalsAndDeparture x = s.ToObject<ArrivalsAndDeparture>();
                         arrivalsAndDeparture.Add(x);
                     }
                 }
             }
             return arrivalsAndDeparture;
         }
-
-        // Removes the identifier from route name, e.g., ###E for Express routes
-        private string CleanRouteName(string routeShortName)
-        {
-            return Regex.Replace(routeShortName, "[^0-9]", "");
-        }
-
+ 
         // Finds the bus route that matches the route short name and finds the closest
         // bus stop that contains the route.
         // Returns a tuple of the user's Route and the nearest Stop in a 1800-meter radius
         public async Task<(Route route, Stop stop)> GetRouteAndStopForLocation(string routeShortName, string lat, string lon)
         {
-            var routeAndStops = await GetStopsForRoute(routeShortName, lat, lon);
+            (Route, List<Stop>) routeAndStops = await GetStopsForRoute(routeShortName, lat, lon);
             if (routeAndStops.Item1 == null || routeAndStops.Item2 == null)
             {
                 throw new ArgumentException("No stops were found within a mile of your location for your bus route.");
             }
 
-            Stop minDistStop;
-            //if (direction != null)
-            //    minDistStop = FindClosestStopInDirection(direction, lat, lon, routeAndStops.Item2);
-            //else
-                minDistStop = routeAndStops.Item2.First();
-
+            Stop minDistStop = routeAndStops.Item2.First();
             return (routeAndStops.Item1, minDistStop);
         }
-
-        // Determines the closest stop to the given latitude and longitude
-        //private Stop FindClosestStopInDirection(Direction direction, string lat, string lon, List<Stop> stopsForRoute)
-        //{
-        //    var stopWithMinDist = stopsForRoute?.Where(s => s.Direction.Equals(direction))
-        //                              ?.Select(d => (stop: d, distance: CalculateDistance(lat, lon, d.Lat, d.Lon)))
-        //                              ?.OrderBy(t => t.distance).First();
-
-        //    return stopWithMinDist?.stop;
-        //}
 
         private async Task<(Route, List<Stop>)> GetStopsForRoute(string routeShortName, string lat, string lon)
         {
@@ -264,17 +225,17 @@ namespace BusInfo
             var jobject = JObject.Parse(json);
             if (jobject["code"].ToString() == "200")
             {
-                var routes = jobject["data"]["references"]["routes"].Children();
-                var targetRoute = routes.Where(x => x["shortName"].ToString() == routeShortName).FirstOrDefault();
+                JEnumerable<JToken> routes = jobject["data"]["references"]["routes"].Children();
+                JToken targetRoute = routes.Where(x => x["shortName"].ToString() == routeShortName).FirstOrDefault();
                 if (targetRoute != null)
                 {
-                    var route = targetRoute.ToObject<Route>();
-                    var stops = jobject["data"]["list"].Children();
-                    List<Stop> stopsForRoute = new List<Stop>();
-                    foreach (var s in stops)
+                    Route route = targetRoute.ToObject<Route>();
+                    JEnumerable<JToken> stops = jobject["data"]["list"].Children();
+                    var stopsForRoute = new List<Stop>();
+                    foreach (JToken s in stops)
                     {
-                        var routeIds = s["routeIds"];
-                        foreach (var rId in routeIds)
+                        JToken routeIds = s["routeIds"];
+                        foreach (JToken rId in routeIds)
                         {
                             if (rId.ToString() == route.Id)
                             {
@@ -286,13 +247,38 @@ namespace BusInfo
                 }
             }
             return (null, null);
+        }  
+    }
+
+    public class BusHelpers
+    {
+        // Checks if given latitude and longitude are valid entries
+        public static void ValidateLatLon(string lat, string lon)
+        {
+            if (lat.Length > 0 && lon.Length > 0)
+            {
+                var latDouble = double.Parse(lat);
+                var lonDouble = double.Parse(lon);
+                if (latDouble >= -90 && latDouble <= 90 && lonDouble >= -180 && lonDouble <= 180)
+                {
+                    return;
+                }
+                else
+                {
+                    throw new ArgumentException("Not a valid latitude or longitude.");
+                }
+            }
+            throw new ArgumentException("Not a valid latitude or longitude.");
         }
 
+        // Removes the identifier from route name, e.g., ###E for Express routes
+        public static string CleanRouteName(string routeShortName) => Regex.Replace(routeShortName, "[^0-9]", "");
 
         // Uses distance formula to find distance between two points
-        private double CalculateDistance(string lat1, string lon1, double lat2, double lon2)
+        public static double CalculateDistance(string lat1, string lon1, double lat2, double lon2)
         {
             return Math.Sqrt(Math.Pow(double.Parse(lat1) - lat2, 2) + Math.Pow(double.Parse(lon1) - lon2, 2));
         }
     }
+
 }

@@ -47,13 +47,13 @@ namespace TransitKingSkill
             string output;
             if (busSlot != null)
             {
-                string busRoute = busSlot.ToString();
-                var times = await _busInfo.GetArrivalTimesForRouteName(busRoute, conventionCenter.lat, conventionCenter.lon);
+                var busRoute = busSlot.ToString();
+                List<DateTime> times = await _busInfo.GetArrivalTimesForRouteName(busRoute, conventionCenter.lat, conventionCenter.lon);
 
                 if (times != null)
                 {
                     output = $"The next {busSlot} bus arrives at ";
-                    foreach (var time in times)
+                    foreach (DateTime time in times)
                     {
                         output += time;
                     }
@@ -73,10 +73,7 @@ namespace TransitKingSkill
             return BuildSpeechletResponse(intent.Name, output, false);
         }
 
-        public override Task<SpeechletResponse> OnLaunchAsync(LaunchRequest launchRequest, Session session)
-        {
-            return Task.FromResult(GetWelcomeResponse());
-        }
+        public override Task<SpeechletResponse> OnLaunchAsync(LaunchRequest launchRequest, Session session) => Task.FromResult(GetWelcomeResponse());
 
         private SpeechletResponse GetWelcomeResponse()
         {
@@ -106,14 +103,8 @@ namespace TransitKingSkill
             return response;
         }
 
-        public override Task OnSessionEndedAsync(SessionEndedRequest sessionEndedRequest, Session session)
-        {
-            throw new NotImplementedException();
-        }
+        public override Task OnSessionEndedAsync(SessionEndedRequest sessionEndedRequest, Session session) => throw new NotImplementedException();
 
-        public override Task OnSessionStartedAsync(SessionStartedRequest sessionStartedRequest, Session session)
-        {
-            throw new NotImplementedException();
-        }
+        public override Task OnSessionStartedAsync(SessionStartedRequest sessionStartedRequest, Session session) => throw new NotImplementedException();
     }
 }

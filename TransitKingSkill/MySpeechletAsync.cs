@@ -29,18 +29,18 @@ namespace TransitKingSkill
             DateTime now = DateTime.UtcNow; // reference time for this request
 
             string chainUrl = null;
-            if (String.IsNullOrEmpty(chainUrl = httpRequest.Headers[Sdk.SIGNATURE_CERT_URL_REQUEST_HEADER]))
+            if (string.IsNullOrEmpty(chainUrl = httpRequest.Headers[Sdk.SIGNATURE_CERT_URL_REQUEST_HEADER]))
             {
                 validationResult = validationResult | SpeechletRequestValidationResult.NoCertHeader;
             }
 
             string signature = null;
-            if (String.IsNullOrEmpty(signature = httpRequest.Headers[Sdk.SIGNATURE_REQUEST_HEADER]))
+            if (string.IsNullOrEmpty(signature = httpRequest.Headers[Sdk.SIGNATURE_REQUEST_HEADER]))
             {
                 validationResult = validationResult | SpeechletRequestValidationResult.NoSignatureHeader;
             }
 
-            var alexaBytes = await ReadBodyToArray(httpRequest);
+            byte[] alexaBytes = await ReadBodyToArray(httpRequest);
             // attempt to verify signature only if we were able to locate certificate and signature headers
             if (validationResult == SpeechletRequestValidationResult.OK)
             {
@@ -53,7 +53,7 @@ namespace TransitKingSkill
             SpeechletRequestEnvelope alexaRequest = null;
             try
             {
-                var alexaContent = UTF8Encoding.UTF8.GetString(alexaBytes, 0, alexaBytes.Length);
+                var alexaContent = Encoding.UTF8.GetString(alexaBytes, 0, alexaBytes.Length);
                 alexaRequest = SpeechletRequestEnvelope.FromJson(alexaContent);
             }
             catch (Newtonsoft.Json.JsonReaderException)
@@ -82,7 +82,7 @@ namespace TransitKingSkill
                 };
             }
 
-            string alexaResponse = await DoProcessRequestAsync(alexaRequest);
+            var alexaResponse = await DoProcessRequestAsync(alexaRequest);
 
             HttpResponseMessage httpResponse;
             if (alexaResponse == null)
@@ -91,8 +91,10 @@ namespace TransitKingSkill
             }
             else
             {
-                httpResponse = new HttpResponseMessage(HttpStatusCode.OK);
-                httpResponse.Content = new StringContent(alexaResponse, Encoding.UTF8, "application/json");
+                httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(alexaResponse, Encoding.UTF8, "application/json")
+                };
                 Debug.WriteLine(httpResponse.ToLogString());
             }
 
@@ -178,9 +180,9 @@ namespace TransitKingSkill
             }
 
             // Auto-session management: copy all slot values from current intent into session
-            foreach (var slot in request.Intent.Slots.Values)
+            foreach (AlexaSkillsKit.Slu.Slot slot in request.Intent.Slots.Values)
             {
-                if (!String.IsNullOrEmpty(slot.Value)) session.Attributes[slot.Name] = slot.Value;
+                if (!string.IsNullOrEmpty(slot.Value)) session.Attributes[slot.Name] = slot.Value;
             }
         }
 
