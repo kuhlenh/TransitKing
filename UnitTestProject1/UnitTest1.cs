@@ -66,13 +66,13 @@ namespace UnitTestProject1
                                     "Not a valid latitude or longitude.");
         }
 
-        [TestMethod]
-        public async Task TestGetArrivalsEmptyLatLon()
-        {
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
-                                    await busInfo.GetArrivalTimesForRouteName(busRoute, "", ""),
-                                    "Not a valid latitude or longitude.");
-        }
+        //[TestMethod]
+        //public async Task TestGetArrivalsEmptyLatLon()
+        //{
+        //    await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+        //                            await busInfo.GetArrivalTimesForRouteName(busRoute, "", ""),
+        //                            "Not a valid latitude or longitude.");
+        //}
 
         [TestMethod]
         public async Task TestGetArrivalsNull()

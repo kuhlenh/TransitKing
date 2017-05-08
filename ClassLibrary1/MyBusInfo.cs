@@ -182,6 +182,10 @@ namespace BusInfo
                 {
                     return;
                 }
+                else
+                {
+                    throw new ArgumentException("Not a valid latitude or longitude.");
+                }
             }
             throw new ArgumentException("Not a valid latitude or longitude.");
         }
