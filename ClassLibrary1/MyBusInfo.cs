@@ -156,21 +156,19 @@ namespace BusInfo
             var UtcData = arrivalData.Select(a => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                                                .AddMilliseconds(Convert.ToDouble(a.PredictedArrivalTime))).Take(3);
             // DEMO : change from Utc to user's timezone
-            //TimeZoneInfo timeZoneInfo = await GetTimeZoneInfoAsync(lat, lon);
-            //var UserTimeData = UtcData.Select(d => TimeZoneInfo.ConvertTimeFromUtc(d, timeZoneInfo));
-            //return UserTimeData.ToList();
-
-            return UtcData.ToList();
+            TimeZoneInfo timeZoneInfo = await GetTimeZoneInfoAsync(lat, lon);
+            var UserTimeData = UtcData.Select(d => TimeZoneInfo.ConvertTimeFromUtc(d, timeZoneInfo));
+            return UserTimeData.ToList();
         }
-        
-        //public async Task<TimeZoneInfo> GetTimeZoneInfoAsync(string lat, string lon)
-        //{
-        //    string json = await _timezoneConverter.GetTimeZoneJsonFromLatLonAsync(lat, lon);
-        //    string timeZoneId = JObject.Parse(json)["timeZoneId"].ToString();
-        //    var olsonTimeZone = olsonWindowsTimes[timeZoneId];
-        //    TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZone);
-        //    return timeZoneInfo;
-        //}
+
+        public async Task<TimeZoneInfo> GetTimeZoneInfoAsync(string lat, string lon)
+        {
+            string json = await _timezoneConverter.GetTimeZoneJsonFromLatLonAsync(lat, lon);
+            string timeZoneId = JObject.Parse(json)["timeZoneId"].ToString();
+            var olsonTimeZone = olsonWindowsTimes[timeZoneId];
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZone);
+            return timeZoneInfo;
+        }
 
         private void ValidateLatLon(string lat, string lon)
         {
