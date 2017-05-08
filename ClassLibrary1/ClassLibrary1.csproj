@@ -2,13 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <Features>IOperation</Features>
-    <CodeAnalysisRuleSet>..\..\ClassLibrary1\ClassLibrary1\LiveCodeAnalysis.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\TransitKing\ClassLibrary1\LiveCodeAnalysis.ruleset</CodeAnalysisRuleSet>
     <Features>IOperation</Features>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Alexa.NET" Version="1.0.0-beta-8" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
   </ItemGroup>
   
