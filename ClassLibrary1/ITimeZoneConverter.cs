@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace BusInfo
 {
     public interface ITimeZoneConverter
     {
-        Task<string> GetJsonForTimeZoneFromLatLongAsync(string lat, string lon);
+        Task<string> GetTimeZoneJsonFromLatLonAsync(string lat, string lon);
     }
 }

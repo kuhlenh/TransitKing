@@ -24,7 +24,7 @@ namespace UnitTestProject1
             var expectedStop = new Stop("700", new Direction("NW"), "1_700", 47.610951, 0, -122.33725, "4th Ave & Pike St", new List<string>(), "UNKNOWN");
 
             Assert.AreEqual(expectedStop.Id, actual.Item2.Id);
-            Assert.AreEqual(expectedRoute.Id, actual.Item1.Id);  
+            Assert.AreEqual(expectedRoute.Id, actual.Item1.Id);
         }
 
         [TestMethod]
@@ -52,14 +52,32 @@ namespace UnitTestProject1
             expected.Add(DateTime.Parse("5/1/2017, 4:33:42 PM"));
             expected.Add(DateTime.Parse("5/1/2017, 4:35:12 PM"));
             expected.Add(DateTime.Parse("5/1/2017, 4:43:46 PM"));
-            
-            //new DateTime("5/1/2017, 4:48:18 PM"),
-            //new DateTime("5/1/2017, 4:50:06 PM"),
-            
+
             Assert.AreEqual(3, actual.Count);
             CollectionAssert.AreEqual(expected, actual);
         }
 
+        [TestMethod]
+        public async Task TestGetArrivalsInvalidLatLon()
+        {
+            await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+                                    await busInfo.GetArrivalTimesForRouteName(busRoute, "-100.0000", "200.0000"),
+                                    "Not a valid latitude or longitude.");
+        }
 
+        [TestMethod]
+        public async Task TestGetArrivalsEmptyLatLon()
+        {
+            await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+                                    await busInfo.GetArrivalTimesForRouteName(busRoute, "", ""),
+                                    "Not a valid latitude or longitude.");
+        }
+
+        [TestMethod]
+        public async Task TestGetArrivalsNull()
+        {
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+                                    await busInfo.GetArrivalTimesForRouteName(busRoute, null, null));
+        }
     }
 }

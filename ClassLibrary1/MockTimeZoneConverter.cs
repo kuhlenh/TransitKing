@@ -7,9 +7,9 @@ namespace BusInfo
     {
         private static string LoadJson(string file) => File.ReadAllText(file);
 
-        public Task<string> GetJsonForTimeZoneFromLatLongAsync(string lat, string lon)
+        public Task<string> GetTimeZoneJsonFromLatLonAsync(string lat, string lon)
         {
-            var json = LoadJson(@"C:\Users\kaseyu\Source\Repos\TransitKing\UnitTestProject1\TimeZone.json");
+            var json = LoadJson(@"C:\Users\kaseyu\Source\Repos\TransitKing\UnitTestProject1\Location.json");
             return Task.FromResult(json);
         }
     }

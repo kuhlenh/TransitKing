@@ -148,25 +148,50 @@ namespace BusInfo
         // Returns a list of DateTimes for the timezone of the given lat/lon
         public async Task<List<DateTime>> GetArrivalTimesForRouteName(string routeShortName, string lat, string lon)
         {
+            ValidateLatLon(lat, lon);
+            
             // find the route object for the given name and the closest stop for that route
             var (route, stop) = await GetRouteAndStopForLocation(routeShortName, lat, lon);
             var arrivalData = await GetArrivalsAndDepartures(stop.Id, route.ShortName);
-            var convertToDateTime = arrivalData.Select(a => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+            var UtcData = arrivalData.Select(a => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                                                .AddMilliseconds(Convert.ToDouble(a.PredictedArrivalTime))).Take(3);
-            // change from Utc to user's timezone
-            TimeZoneInfo timezoneInfo = await GetTimeZoneInfo(lat, lon);
-            var adjustedForTimeZone = convertToDateTime.Select(d => TimeZoneInfo.ConvertTimeFromUtc(d, timezoneInfo));
-
-            return adjustedForTimeZone.ToList();
+            // DEMO : change from Utc to user's timezone
+            TimeZoneInfo timeZoneInfo = await GetTimeZoneInfoAsync(lat, lon);
+            var UserTimeData = UtcData.Select(d => TimeZoneInfo.ConvertTimeFromUtc(d, timeZoneInfo));
+            return UserTimeData.ToList();
         }
 
-        private async Task<TimeZoneInfo> GetTimeZoneInfo(string lat, string lon)
+        private void ValidateLatLon(string lat, string lon)
         {
-            var timezoneJson = await _timezoneConverter.GetJsonForTimeZoneFromLatLongAsync(lat, lon);
-            var timezoneOlson = JObject.Parse(timezoneJson)["timezoneId"].ToString();
-            var timezoneId = olsonWindowsTimes[timezoneOlson];
-            var timezoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timezoneId);
-            return timezoneInfo;
+            if (lat == null)
+            {
+                throw new ArgumentNullException(nameof(lat));
+            }
+
+            if (lon == null)
+            {
+                throw new ArgumentNullException(nameof(lon));
+            }
+
+            if (lat.Length > 0 && lon.Length > 0)
+            {
+                var latDouble = double.Parse(lat);
+                var lonDouble = double.Parse(lon);
+                if (latDouble >=-90 && latDouble <=90 && lonDouble >=-180 && lonDouble <=180)
+                {
+                    return;
+                }
+            }
+            throw new ArgumentException("Not a valid latitude or longitude.");
+        }
+
+        public async Task<TimeZoneInfo> GetTimeZoneInfoAsync(string lat, string lon)
+        {
+            string json = await _timezoneConverter.GetTimeZoneJsonFromLatLonAsync(lat, lon);
+            string timeZoneId = JObject.Parse(json)["timeZoneId"].ToString();
+            var olsonTimeZone = olsonWindowsTimes[timeZoneId];
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZone);
+            return timeZoneInfo;
         }
 
         public async Task<List<ArrivalsAndDeparture>> GetArrivalsAndDepartures(string stopId, string routeShortName)
