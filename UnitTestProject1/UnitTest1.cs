@@ -14,7 +14,6 @@ namespace UnitTestProject1
         (string lat, string lon) conventionCenter = ("47.611959", "-122.332893");
         (string lat, string lon) microsoftCampus = ("47.639905", "-122.125485");
         string busRoute = "545";
-        //Direction direction = new Direction("N");
 
         [TestMethod]
         public async Task TestGetRouteAndStopForLocation()

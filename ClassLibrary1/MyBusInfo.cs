@@ -236,10 +236,20 @@ namespace BusInfo
             //if (direction != null)
             //    minDistStop = FindClosestStopInDirection(direction, lat, lon, routeAndStops.Item2);
             //else
-            minDistStop = routeAndStops.Item2.First();
+                minDistStop = routeAndStops.Item2.First();
 
             return (routeAndStops.Item1, minDistStop);
         }
+
+        // Determines the closest stop to the given latitude and longitude
+        //private Stop FindClosestStopInDirection(Direction direction, string lat, string lon, List<Stop> stopsForRoute)
+        //{
+        //    var stopWithMinDist = stopsForRoute?.Where(s => s.Direction.Equals(direction))
+        //                              ?.Select(d => (stop: d, distance: CalculateDistance(lat, lon, d.Lat, d.Lon)))
+        //                              ?.OrderBy(t => t.distance).First();
+
+        //    return stopWithMinDist?.stop;
+        //}
 
         private async Task<(Route, List<Stop>)> GetStopsForRoute(string routeShortName, string lat, string lon)
         {
@@ -278,15 +288,6 @@ namespace BusInfo
             return (null, null);
         }
 
-        // Determines the closest stop to the given latitude and longitude
-        //private Stop FindClosestStopInDirection(Direction direction, string lat, string lon, List<Stop> stopsForRoute)
-        //{
-        //    var stopWithMinDist = stopsForRoute?.Where(s => s.Direction.Equals(direction))
-        //                              ?.Select(d => (stop: d, distance: CalculateDistance(lat, lon, d.Lat, d.Lon)))
-        //                              ?.OrderBy(t => t.distance).First();
-
-        //    return stopWithMinDist?.stop;
-        //}
 
         // Uses distance formula to find distance between two points
         private double CalculateDistance(string lat1, string lon1, double lat2, double lon2)
