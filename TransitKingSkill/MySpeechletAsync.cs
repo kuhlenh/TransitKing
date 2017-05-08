@@ -184,7 +184,7 @@ namespace TransitKingSkill
             }
         }
 
-        private async static Task<byte[]> ReadBodyToArray(HttpRequest httpRequest)
+        private async Task<byte[]> ReadBodyToArray(HttpRequest httpRequest)
         {
             using (var memorystream = new MemoryStream())
             {
