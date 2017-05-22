@@ -274,11 +274,17 @@ namespace BusInfo
         // Removes the identifier from route name, e.g., ###E for Express routes
         public static string CleanRouteName(string routeShortName) => Regex.Replace(routeShortName, "[^0-9]", "");
 
-        // Uses distance formula to find distance between two points
-        public static double CalculateDistance(string lat1, string lon1, double lat2, double lon2)
-        {
-            return Math.Sqrt(Math.Pow(double.Parse(lat1) - lat2, 2) + Math.Pow(double.Parse(lon1) - lon2, 2));
-        }
+//        // Uses distance formula to find distance between two points
+//<<<<<<< HEAD
+//        public static double CalculateDistance(string lat1, string lon1, double lat2, double lon2)
+//        {
+//            return Math.Sqrt(Math.Pow(double.Parse(lat1) - lat2, 2) 
+//                   + Math.Pow(double.Parse(lon1) - lon2, 2));
+//        }
+//=======
+//        public static double CalculateDistance(string a1, string a2, double b1, double b2) 
+//            => Math.Sqrt(Math.Pow(double.Parse(a1) - a2, 2) + Math.Pow(double.Parse(b1) - b2, 2));
+//<<<<<<< techorama2
     }
 
 }
