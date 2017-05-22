@@ -283,8 +283,8 @@ namespace BusInfo
 //        }
 //=======
 //        public static double CalculateDistance(string a1, string a2, double b1, double b2) 
-//            => Math.Sqrt(Math.Pow(double.Parse(a1) - a2, 2) + Math.Pow(double.Parse(b1) - b2, 2));
-//<<<<<<< techorama2
+//            => Math.Sqrt(Math.Pow(double.Parse(a1) - b1, 2) + Math.Pow(double.Parse(a2) - b2, 2));
+//>>>>>>> techorama2
     }
 
 }
