@@ -28,15 +28,8 @@
 
   <ItemGroup>
     <Reference Include="AlexaSkillsKit">
-      <HintPath>..\..\..\..\Desktop\AlexaSkillsKit.NET\AlexaSkillsKit.Lib\bin\Debug\AlexaSkillsKit.dll</HintPath>
-    </Reference>
-    <Reference Include="BouncyCastle.Crypto">
-      <HintPath>..\..\..\..\Desktop\AlexaSkillsKit.NET\AlexaSkillsKit.Lib\bin\Debug\BouncyCastle.Crypto.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Formatting">
-      <HintPath>..\..\..\..\Desktop\AlexaSkillsKit.NET\AlexaSkillsKit.Lib\bin\Debug\System.Net.Http.Formatting.dll</HintPath>
+      <HintPath>..\refs\AlexaSkillsKit.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 
 </Project>
