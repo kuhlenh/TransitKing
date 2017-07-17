@@ -18,6 +18,8 @@ namespace BusInfo
         {
             var url = $"http://api.pugetsound.onebusaway.org/api/where/stops-for-location.json?key={Key}&lat={lat}&lon={lon}&radius=1800&maxCount=50";
             var json = await http.GetStringAsync(url);
+
+            
             return json;
         }
     }
