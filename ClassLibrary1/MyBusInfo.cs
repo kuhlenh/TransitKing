@@ -151,13 +151,14 @@ namespace BusInfo
             BusHelpers.ValidateLatLon(lat, lon);
             
             // find the route object for the given name and the closest stop for that route
-            var (route, stop) = await GetRouteAndStopForLocation(routeShortName, lat, lon);
-            List<ArrivalsAndDeparture> arrivalData = await GetArrivalsAndDepartures(stop.Id, route.ShortName);
+            var info = await GetRouteAndStopForLocation(routeShortName, lat, lon);
+            List<ArrivalsAndDeparture> arrivalData = await GetArrivalsAndDepartures(info.Item2.Id, info.Item1.ShortName);
             IEnumerable<DateTime> UtcData = arrivalData.Select(a => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                                                .AddMilliseconds(Convert.ToDouble(a.PredictedArrivalTime))).Take(3);
             // Convert from UTC to user's timezone
             TimeZoneInfo timeZoneInfo = await GetTimeZoneInfoAsync(lat, lon);
             IEnumerable<DateTime> UserTimeData = UtcData.Select(d => TimeZoneInfo.ConvertTimeFromUtc(d, timeZoneInfo));
+
             return UserTimeData.ToList();
         }
 
@@ -165,9 +166,17 @@ namespace BusInfo
         {
             var json = await _timezoneConverter.GetTimeZoneJsonFromLatLonAsync(lat, lon);
             var timeZoneId = JObject.Parse(json)["timeZoneId"].ToString();
-            var olsonTimeZone = olsonWindowsTimes[timeZoneId];
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZone);
-            return timeZoneInfo;
+            try
+            {
+                var olsonTimeZone = olsonWindowsTimes[timeZoneId];
+                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(olsonTimeZone);
+                return timeZoneInfo;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            return TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
         }
 
         public async Task<List<ArrivalsAndDeparture>> GetArrivalsAndDepartures(string stopId, string routeShortName)
