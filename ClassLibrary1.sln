@@ -1,18 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26913.0
+VisualStudioVersion = 15.0.26915.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.csproj", "{C25E8324-54BA-4957-87D7-D9D43181C3B9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{6D2CD2A3-22D7-424B-B4B6-AEC2FBCDA071}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransitKingSkill", "TransitKingSkill\TransitKingSkill.csproj", "{A22C7CB2-7FEE-4DCB-A58C-7F89F014EEE7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ADEBBB36-F6CD-4799-B5B7-791AADE26B3E}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skill", "Skill\Skill.csproj", "{D3B85E17-FD2A-4144-B0A9-B2836A20ED16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +28,10 @@ Global
 		{6D2CD2A3-22D7-424B-B4B6-AEC2FBCDA071}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D2CD2A3-22D7-424B-B4B6-AEC2FBCDA071}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D2CD2A3-22D7-424B-B4B6-AEC2FBCDA071}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A22C7CB2-7FEE-4DCB-A58C-7F89F014EEE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A22C7CB2-7FEE-4DCB-A58C-7F89F014EEE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A22C7CB2-7FEE-4DCB-A58C-7F89F014EEE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A22C7CB2-7FEE-4DCB-A58C-7F89F014EEE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3B85E17-FD2A-4144-B0A9-B2836A20ED16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3B85E17-FD2A-4144-B0A9-B2836A20ED16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3B85E17-FD2A-4144-B0A9-B2836A20ED16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3B85E17-FD2A-4144-B0A9-B2836A20ED16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

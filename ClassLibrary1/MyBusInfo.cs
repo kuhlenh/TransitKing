@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace BusInfo
 {
+
     public class MyStopInfo
     {
         private readonly IBusLocator _busLocator;
@@ -147,9 +148,7 @@ namespace BusInfo
         // Finds the closest stop for the given route name and gets arrival data for that stop
         // Returns a list of DateTimes for the timezone of the given lat/lon
         public async Task<List<DateTime>> GetArrivalTimesForRouteName(string routeShortName, string lat, string lon)
-        {
-            BusHelpers.ValidateLatLon(lat, lon);
-            
+        {         
             // find the route object for the given name and the closest stop for that route
             var info = await GetRouteAndStopForLocation(routeShortName, lat, lon);
             List<ArrivalsAndDeparture> arrivalData = await GetArrivalsAndDepartures(info.Item2.Id, info.Item1.ShortName);
